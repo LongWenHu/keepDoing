@@ -3,37 +3,8 @@ package com.hwl.KeepDoing.common;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.identity.IdentityColumnSupport;
 import org.hibernate.dialect.identity.IdentityColumnSupportImpl;
-import org.hibernate.type.descriptor.java.StringJavaType;
-
-import java.sql.Types;
 
 public class SQLiteDialect extends Dialect {
-    public SQLiteDialect() {
-        super();
-        registerColumnType(Types.BIT, "integer");
-        registerColumnType(Types.TINYINT, "integer");
-        registerColumnType(Types.SMALLINT, "integer");
-        registerColumnType(Types.INTEGER, "integer");
-        registerColumnType(Types.BIGINT, "integer");
-        registerColumnType(Types.FLOAT, "real");
-        registerColumnType(Types.REAL, "real");
-        registerColumnType(Types.DOUBLE, "real");
-        registerColumnType(Types.NUMERIC, "real");
-        registerColumnType(Types.DECIMAL, "real");
-        registerColumnType(Types.CHAR, "text");
-        registerColumnType(Types.VARCHAR, "text");
-        registerColumnType(Types.LONGVARCHAR, "text");
-        registerColumnType(Types.DATE, "date");
-        registerColumnType(Types.TIME, "time");
-        registerColumnType(Types.TIMESTAMP, "timestamp");
-        registerColumnType(Types.BINARY, "blob");
-        registerColumnType(Types.VARBINARY, "blob");
-        registerColumnType(Types.LONGVARBINARY, "blob");
-        registerColumnType(Types.BLOB, "blob");
-        registerColumnType(Types.CLOB, "text");
-        registerColumnType(Types.BOOLEAN, "integer");
-    }
-
     @Override
     public IdentityColumnSupport getIdentityColumnSupport() {
         return new IdentityColumnSupportImpl() {
