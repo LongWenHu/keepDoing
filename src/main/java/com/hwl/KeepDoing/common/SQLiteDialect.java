@@ -4,7 +4,7 @@ import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
 import org.hibernate.dialect.function.StandardSQLFunction;
 import org.hibernate.dialect.function.VarArgsSQLFunction;
-import org.hibernate.type.StringType;
+import org.hibernate.type.descriptor.java.StringJavaType;
 
 import java.sql.Types;
 
@@ -34,10 +34,10 @@ public class SQLiteDialect extends Dialect {
         registerColumnType(Types.CLOB, "text");
         registerColumnType(Types.BOOLEAN, "integer");
 
-        registerFunction("concat", new VarArgsSQLFunction(StringType.INSTANCE, "'"", "||", "'""));
-        registerFunction("mod", new SQLFunctionTemplate(StringType.INSTANCE, "?1 % ?2"));
-        registerFunction("substr", new StandardSQLFunction("substr", StringType.INSTANCE));
-        registerFunction("substring", new StandardSQLFunction("substr", StringType.INSTANCE));
+        registerFunction("concat", new VarArgsSQLFunction(StringJavaType.INSTANCE, "'"", "||", "'""));
+        registerFunction("mod", new SQLFunctionTemplate(StringJavaType.INSTANCE, "?1 % ?2"));
+        registerFunction("substr", new StandardSQLFunction("substr", StringJavaType.INSTANCE));
+        registerFunction("substring", new StandardSQLFunction("substr", StringJavaType.INSTANCE));
     }
 
     @Override
