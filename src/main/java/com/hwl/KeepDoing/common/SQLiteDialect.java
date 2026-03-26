@@ -4,17 +4,16 @@ import org.hibernate.dialect.Dialect;
 
 public class SQLiteDialect extends Dialect {
 
-    @Override
+
     public boolean supportsLimit() {
         return true;
     }
 
-    @Override
+
     public boolean supportsLimitOffset() {
         return true;
     }
 
-    @Override
     public String getLimitString(String query, int offset, int limit) {
         if (offset > 0) {
             return query + " limit " + limit + " offset " + offset;
@@ -28,12 +27,11 @@ public class SQLiteDialect extends Dialect {
         return true;
     }
 
-    @Override
+
     public String getCreateTemporaryTableString() {
         return "create temporary table if not exists";
     }
 
-    @Override
     public boolean dropTemporaryTableAfterUse() {
         return false;
     }
