@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepDoing - 任务管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #34495e;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .header {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+        }
+
+        .content-area {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .todo-form {
+            margin-bottom: 30px;
+        }
+
+        .todo-form input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .todo-form button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .todo-form button:hover {
+            background-color: #2980b9;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .todo-item input[type="checkbox"] {
+            margin-right: 15px;
+        }
+
+        .todo-item .title {
+            flex: 1;
+        }
+
+        .todo-item .actions {
+            margin-left: 15px;
+        }
+
+        .todo-item .actions button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .todo-item .actions .edit {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .todo-item .actions .delete {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .completed .title {
+            text-decoration: line-through;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 功能目录 -->
+        <div class="sidebar">
+            <h2>功能目录</h2>
+            <ul>
+                <li><a href="#">首页</a></li>
+                <li><a href="#">任务管理</a></li>
+                <li><a href="#">项目管理</a></li>
+                <li><a href="#">统计分析</a></li>
+                <li><a href="#">设置</a></li>
+            </ul>
+        </div>
+
+        <!-- 主要工作区 -->
+        <div class="main-content">
+            <div class="header">
+                <h1>KeepDoing - 任务管理系统</h1>
+                <p>高效管理你的任务，提高工作效率</p>
+            </div>
+
+            <div class="content-area">
+                <h2>任务列表</h2>
+                
+                <!-- 任务添加表单 -->
+                <div class="todo-form">
+                    <input type="text" id="todo-title" placeholder="输入任务标题...">
+                    <button onclick="addTodo()">添加任务</button>
+                </div>
+
+                <!-- 任务列表 -->
+                <ul class="todo-list" id="todo-list">
+                    <!-- 任务项将通过JavaScript动态添加 -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始化任务列表
+        let todos = [];
+
+        // 加载任务
+        function loadTodos() {
+            fetch('/api/todos')
+                .then(response => response.json())
+                .then(data => {
+                    todos = data;
+                    renderTodos();
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // 渲染任务列表
+        function renderTodos() {
+            const todoList = document.getElementById('todo-list');
+            todoList.innerHTML = '';
+
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                li.innerHTML = `
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
+                    <span class="title">${todo.title}</span>
+                    <div class="actions">
+                        <button class="edit" onclick="editTodo(${todo.id})">编辑</button>
+                        <button class="delete" onclick="deleteTodo(${todo.id})">删除</button>
+                    </div>
+                `;
+                todoList.appendChild(li);
+            });
+        }
+
+        // 添加任务
+        function addTodo() {
+            const title = document.getElementById('todo-title').value;
+            if (!title) return;
+
+            fetch('/api/todos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, completed: false })
+            })
+            .then(response => response.json())
+            .then(todo => {
+                todos.push(todo);
+                renderTodos();
+                document.getElementById('todo-title').value = '';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // 切换任务状态
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+
+                fetch(`/api/todos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(todo)
+                })
+                .then(() => renderTodos())
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // 编辑任务
+        function editTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                const newTitle = prompt('请输入新的任务标题:', todo.title);
+                if (newTitle && newTitle.trim() !== '') {
+                    todo.title = newTitle;
+
+                    fetch(`/api/todos/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(todo)
+                    })
+                    .then(() => renderTodos())
+                    .catch(error => console.error('Error:', error));
+                }
+            }
+        }
+
+        // 删除任务
+        function deleteTodo(id) {
+            if (confirm('确定要删除这个任务吗？')) {
+                fetch(`/api/todos/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    todos = todos.filter(t => t.id !== id);
+                    renderTodos();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // 页面加载时加载任务
+        window.onload = loadTodos;
+    </script>
+</body>
+</html>
